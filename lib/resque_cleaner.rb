@@ -85,10 +85,21 @@ module Resque
 
       # Returns every jobs for which block evaluates to true.
       def select(&block)
-        jobs = @limiter.jobs
-        block_given? ? @limiter.jobs.select(&block) : jobs
+        jobs = @limiter.jobs.map { |job| transform_active_job(job) }
+        jobs = jobs.select(&block) if block_given?
+        jobs
       end
       alias :failure_jobs :select
+
+      def transform_active_job(job)
+        return job unless job['payload']['class'] == 'ActiveJob::QueueAdapters::ResqueAdapter::JobWrapper'
+        active_job = job['payload']['args'].first
+
+        result = job.clone
+        result['payload']['class'] = active_job['job_class']
+        result['payload']['args'] = active_job['arguments']
+        result
+      end
 
       def select_by_regex(regex)
         select do |job|
@@ -304,4 +315,3 @@ module Resque
 end
 
 require 'resque_cleaner/server'
-
