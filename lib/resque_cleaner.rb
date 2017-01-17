@@ -91,17 +91,6 @@ module Resque
       end
       alias :failure_jobs :select
 
-      def transform_active_job(job)
-        return job unless job['payload']['class'] == 'ActiveJob::QueueAdapters::ResqueAdapter::JobWrapper'
-        active_job = job['payload']['args'].first
-
-        result = job.clone
-        result['payload'] = job['payload'].clone
-        result['payload']['class'] = "#{active_job['job_class']} (via ActiveJob)"
-        result['payload']['args'] = active_job['arguments']
-        result
-      end
-
       def select_by_regex(regex)
         select do |job|
           job.to_s =~ regex
@@ -163,6 +152,19 @@ module Resque
         c = @limiter.maximum
         redis.ltrim(:failed, -c, -1)
         c
+      end
+
+      private
+
+      def transform_active_job(job)
+        return job unless job['payload']['class'] == 'ActiveJob::QueueAdapters::ResqueAdapter::JobWrapper'
+        active_job = job['payload']['args'].first
+
+        result = job.clone
+        result['payload'] = job['payload'].clone
+        result['payload']['class'] = "#{active_job['job_class']} (via ActiveJob)"
+        result['payload']['args'] = active_job['arguments']
+        result
       end
 
       # Exntends job(Hash instance) with some helper methods.
