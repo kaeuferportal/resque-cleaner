@@ -97,7 +97,7 @@ module Resque
 
         result = job.clone
         result['payload'] = job['payload'].clone
-        result['payload']['class'] = active_job['job_class']
+        result['payload']['class'] = "#{active_job['job_class']} (via ActiveJob)"
         result['payload']['args'] = active_job['arguments']
         result
       end
