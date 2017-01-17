@@ -96,6 +96,7 @@ module Resque
         active_job = job['payload']['args'].first
 
         result = job.clone
+        result['payload'] = job['payload'].clone
         result['payload']['class'] = active_job['job_class']
         result['payload']['args'] = active_job['arguments']
         result
@@ -112,7 +113,7 @@ module Resque
         cleared = 0
         @limiter.lock do
           @limiter.jobs.each_with_index do |job,i|
-            if !block_given? || block.call(job)
+            if !block_given? || block.call(transform_active_job(job))
               index = @limiter.start_index + i - cleared
               # fetches again since you can't ensure that it is always true:
               # a == endode(decode(a))
@@ -131,7 +132,7 @@ module Resque
         queue = options["queue"] || options[:queue]
         @limiter.lock do
           @limiter.jobs.each_with_index do |job,i|
-            if !block_given? || block.call(job)
+            if !block_given? || block.call(transform_active_job(job))
               index = @limiter.start_index + i - requeued
 
               value = redis.lindex(:failed, index)
