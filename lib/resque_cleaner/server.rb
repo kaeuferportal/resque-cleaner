@@ -200,7 +200,7 @@ module ResqueCleaner
           redirect url_path(:cleaner)
         end
 
-        get /cleaner\/public\/([a-z]+\.[a-z]+)/ do
+        get %r{/cleaner/public/([a-z]+.[a-z]+)} do
           send_file ResqueCleaner::Server.public_path(params[:captures].first)
         end
       end
