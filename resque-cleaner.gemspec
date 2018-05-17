@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name              = "resque-cleaner"
-  s.version           = "0.3.2"
+  s.version           = "0.4.1"
   s.date              = Time.now.strftime('%Y-%m-%d')
   s.summary           = "Resque plugin cleaning up failed jobs."
   s.homepage          = "https://github.com/ono/resque-cleaner"
@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files  = [ "LICENSE", "README.md", "CHANGELOG.md" ]
   s.rdoc_options      = ["--charset=UTF-8"]
 
-  s.add_dependency "resque", "~> 1.0"
+  s.add_dependency "resque"
 
   s.add_development_dependency "minitest", "~> 5.0"
   s.add_development_dependency "rack-test", "~> 0.6.0"
